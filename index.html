@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meal Member</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0088cc;
+            --primary-dark: #0077b3;
+            --primary-light: #e1f3fb;
+            --accent: #00bfa5;
+            --background: #f5f5f5;
+            --surface: #ffffff;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --text-light: #999999;
+            --border: #e0e0e0;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --bubble-self: #dcf8c6;
+            --bubble-other: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Glassmorphism Container */
+        .container {
+            width: 100%;
+            max-width: 500px;
+            height: 100%;
+            max-height: 900px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                height: 90vh;
+            }
+        }
+
+        /* Registration Page */
+        .registration {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo i {
+            font-size: 3.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .logo h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .logo p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .input-field {
+            position: relative;
+        }
+
+        .input-field input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: var(--surface);
+        }
+
+        .input-field input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(0, 136, 204, 0.2);
+        }
+
+        .input-field i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        /* Chat Interface */
+        .chat-container {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .chat-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        .chat-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .chat-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .chat-actions i {
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            background-color: var(--primary-light);
+            background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%230088cc' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 0.8rem 1rem;
+            border-radius: 18px;
+            position: relative;
+            animation: fadeInUp 0.3s ease;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+
+        .message-self {
+            align-self: flex-end;
+            background-color: var(--bubble-self);
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+        }
+
+        .message-other {
+            align-self: flex-start;
+            background-color: var(--bubble-other);
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+        }
+
+        .message-sender {
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 0.3rem;
+            color: var(--primary);
+        }
+
+        .message-text {
+            font-size: 0.95rem;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            text-align: right;
+            margin-top: 0.3rem;
+        }
+
+        .chat-input-container {
+            padding: 1rem;
+            background-color: var(--surface);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 0.8rem 1.2rem;
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: var(--surface);
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(0, 136, 204, 0.2);
+        }
+
+        .send-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .send-btn:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        .send-btn:active {
+            transform: scale(0.95);
+        }
+
+        .send-btn i {
+            font-size: 1.2rem;
+        }
+
+        /* Status Message */
+        .status-message {
+            text-align: center;
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .loading-dot {
+            width: 8px;
+            height: 8px;
+            margin: 0 4px;
+            background-color: var(--text-light);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+
+        .loading-dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .loading-dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Registration Page -->
+        <div class="registration" id="registration">
+            <div class="logo">
+                <i class="fas fa-utensils"></i>
+                <h1>Meal Member</h1>
+                <p>Connect with your food community</p>
+            </div>
+            <div class="form-group">
+                <label for="name">Your Name</label>
+                <div class="input-field">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="name" placeholder="Enter your name" required>
+                </div>
+            </div>
+            <button class="btn btn-primary" id="registerBtn">
+                <i class="fas fa-sign-in-alt"></i> Join Chat
+            </button>
+        </div>
+
+        <!-- Chat Interface -->
+        <div class="chat-container" id="chatContainer">
+            <div class="chat-header">
+                <div class="chat-title">Meal Member</div>
+                <div class="chat-actions">
+                    <i class="fas fa-users"></i>
+                    <i class="fas fa-ellipsis-v"></i>
+                </div>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <!-- Messages will appear here -->
+            </div>
+            <div class="chat-input-container">
+                <input type="text" class="message-input" id="messageInput" placeholder="Type a message..." autocomplete="off">
+                <button class="send-btn" id="sendBtn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const registrationEl = document.getElementById('registration');
+        const chatContainerEl = document.getElementById('chatContainer');
+        const chatMessagesEl = document.getElementById('chatMessages');
+        const messageInputEl = document.getElementById('messageInput');
+        const sendBtnEl = document.getElementById('sendBtn');
+        const registerBtnEl = document.getElementById('registerBtn');
+
+        // Google Apps Script URL
+        const scriptUrl = 'https://script.google.com/macros/s/AKfycbwrCpHSSS6ck9kXNZ6RkL3nTFOg_LT-ijUPCP-MJCxSTS5yPwCMms1u09o80ka0nmAm/exec';
+
+        // Variables
+        let lastMessageTime = null;
+        let refreshInterval = null;
+        let userName = null;
+        let displayedMessageIds = new Set(); // Track displayed message IDs
+
+        // Check if user is already registered
+        document.addEventListener('DOMContentLoaded', function() {
+            userName = localStorage.getItem('mealMemberUserName');
+            
+            if (userName) {
+                // User is registered, show chat
+                showChatInterface();
+                
+                // Start auto-refresh
+                startAutoRefresh();
+            }
+        });
+
+        // Register user
+        registerBtnEl.addEventListener('click', function() {
+            const name = document.getElementById('name').value.trim();
+            
+            if (name) {
+                userName = name;
+                localStorage.setItem('mealMemberUserName', name);
+                
+                // Show chat interface
+                showChatInterface();
+                
+                // Start auto-refresh
+                startAutoRefresh();
+            } else {
+                alert('Please enter your name');
+            }
+        });
+
+        // Show chat interface
+        function showChatInterface() {
+            registrationEl.style.display = 'none';
+            chatContainerEl.style.display = 'flex';
+            
+            // Add welcome message
+            addMessage({
+                sender: 'System',
+                text: `Welcome to Meal Member, ${userName}! Start chatting now.`,
+                timestamp: new Date().toISOString(),
+                isSelf: false,
+                isSystem: true
+            });
+            
+            // Load previous messages
+            loadMessages();
+        }
+
+        // Start auto-refresh
+        function startAutoRefresh() {
+            // Clear existing interval if any
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+            
+            // Refresh every 2 seconds
+            refreshInterval = setInterval(loadMessages, 500);
+            
+            // Also refresh when window gains focus
+            window.addEventListener('focus', loadMessages);
+        }
+
+        // Send message
+        function sendMessage() {
+            const messageText = messageInputEl.value.trim();
+            if (!messageText) return;
+            
+            if (!userName) {
+                alert('Please register first');
+                return;
+            }
+            
+            const timestamp = new Date().toISOString();
+            const messageId = generateMessageId(userName, timestamp, messageText);
+            
+            // Add message to UI immediately
+            addMessage({
+                sender: userName,
+                text: messageText,
+                timestamp: timestamp,
+                isSelf: true,
+                messageId: messageId
+            });
+            
+            // Clear input
+            messageInputEl.value = '';
+            
+            // Prepare data for Google Apps Script
+            const messageData = {
+                timestamp: timestamp,
+                name: userName,
+                chatId: 'Meal Member',
+                message: messageText,
+                messageId: messageId
+            };
+            
+            // Show sending status
+            showStatus('Sending message...');
+            
+            // Send to Google Apps Script
+            fetch(scriptUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(messageData)
+            })
+            .then(() => {
+                showStatus('Message sent');
+                setTimeout(() => {
+                    document.querySelector('.status-message')?.remove();
+                }, 2000);
+                
+                // Update last message time
+                lastMessageTime = timestamp;
+            })
+            .catch(error => {
+                console.error('Error sending message:', error);
+                showStatus('Failed to send message', true);
+            });
+        }
+
+        // Generate unique message ID
+        function generateMessageId(sender, timestamp, text) {
+            return `${sender}-${timestamp}-${text.substring(0, 20)}-${Math.random().toString(36).substring(2, 8)}`.replace(/\s+/g, '-');
+        }
+
+        // Load messages from server
+        function loadMessages() {
+            fetch(`${scriptUrl}?action=getMessages&chatId=Meal Member&lastTime=${lastMessageTime || ''}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.messages && data.messages.length > 0) {
+                        // Update last message time
+                        lastMessageTime = data.messages[data.messages.length - 1].timestamp;
+                        
+                        // Add new messages
+                        data.messages.forEach(msg => {
+                            // Skip if message already displayed
+                            if (displayedMessageIds.has(msg.messageId)) return;
+                            
+                            addMessage({
+                                sender: msg.name,
+                                text: msg.message,
+                                timestamp: msg.timestamp,
+                                isSelf: msg.name === userName,
+                                messageId: msg.messageId
+                            });
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading messages:', error);
+                });
+        }
+
+        // Add message to chat
+        function addMessage({sender, text, timestamp, isSelf, messageId, isSystem = false}) {
+            // Skip if message already exists (unless it's a system message)
+            if (!isSystem && messageId && displayedMessageIds.has(messageId)) return;
+            
+            const messageEl = document.createElement('div');
+            messageEl.classList.add('message', isSelf ? 'message-self' : 'message-other');
+            
+            const time = new Date(timestamp);
+            const timeString = time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            messageEl.innerHTML = `
+                ${!isSelf ? `<div class="message-sender">${sender}</div>` : ''}
+                <div class="message-text">${text}</div>
+                <div class="message-time">${timeString}</div>
+            `;
+            
+            chatMessagesEl.appendChild(messageEl);
+            
+            // Add to displayed message IDs if not system message
+            if (!isSystem && messageId) {
+                displayedMessageIds.add(messageId);
+            }
+            
+            scrollToBottom();
+        }
+
+        // Show status message
+        function showStatus(text, isError = false) {
+            // Remove existing status if any
+            document.querySelector('.status-message')?.remove();
+            
+            const statusEl = document.createElement('div');
+            statusEl.className = 'status-message';
+            statusEl.textContent = text;
+            if (isError) {
+                statusEl.style.color = '#ff4444';
+            }
+            chatMessagesEl.appendChild(statusEl);
+            scrollToBottom();
+        }
+
+        // Scroll to bottom of chat
+        function scrollToBottom() {
+            chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+        }
+
+        // Event listeners
+        sendBtnEl.addEventListener('click', sendMessage);
+        
+        messageInputEl.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Auto-focus input when chat loads
+        chatContainerEl.addEventListener('animationend', function() {
+            messageInputEl.focus();
+        });
+    </script>
+</body>
+</html>
